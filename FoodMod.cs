@@ -18,10 +18,11 @@ namespace OldFoodStats
     public class FoodMod : BaseUnityPlugin
     {
         private const string ModName = "Huntards H&H Old Food Stats";
-        private const string ModVersion = "2.0.3";
+        private const string ModVersion = "2.0.4";
         private const string ModGUID = "Huntard.OldFoodStats";
 
         public static string configPath = Path.Combine(BepInEx.Paths.ConfigPath, $"{ModGUID}.json");
+        public static string CustomconfigPath = Path.Combine(BepInEx.Paths.ConfigPath, $"{ModGUID}Custom.json");
         private Harmony _harmony;
 
         [HarmonyPatch(typeof(InventoryGrid), "UpdateGui")]
@@ -73,14 +74,16 @@ namespace OldFoodStats
             SaveButton = base.Config.Bind<bool>("General", "Save Config Values", false, new ConfigDescription("Toggle this boolean to re-apply your configuration values, can be done in-game.", null));
 
             LoadConfig();
-            ItemManager.OnItemsRegistered += RegisterConfigValues;
             PrefabManager.OnVanillaPrefabsAvailable += RegisterConfigValues;
+            ZoneManager.OnVanillaLocationsAvailable += RegisterConfigValues;
+            ZoneManager.OnVanillaLocationsAvailable += RegisterCustomConfigValues;
             SaveButton.SettingChanged += UpdateSettings;
         }
         public void UpdateSettings(object sender, EventArgs e)
         {
             Jotunn.Logger.LogInfo("Updating...");
             this.RegisterConfigValues();
+            this.RegisterCustomConfigValues();
         }
 
         private void LoadConfig()
@@ -88,12 +91,23 @@ namespace OldFoodStats
             if (!File.Exists(configPath))
             {
                 GenerateConfigFileFirst();
-                Jotunn.Logger.LogInfo("Generated new configs");
-                return;
+                Jotunn.Logger.LogInfo("Generated config");
+            }
+            if (!File.Exists(CustomconfigPath))
+            {
+                GenerateCustomConfig();
+                Jotunn.Logger.LogInfo("Generated Custom config");
             }
             return;
         }
+        private void GenerateCustomConfig()
+        {
 
+            var foodConfigs = new List<FoodConfig>();
+            var jsonText = JsonMapper.ToJson(foodConfigs);
+            File.WriteAllText(CustomconfigPath, jsonText);
+
+        }
         private void GenerateConfigFileFirst()
         {
 
@@ -770,6 +784,27 @@ namespace OldFoodStats
                 Jotunn.Logger.LogInfo("Updated configs");
             }
         }
+        private void RegisterCustomConfigValues()
+        {
+            var foodcustomconfigs = GetCustomJson();
+
+            foreach (var config in foodcustomconfigs)
+            {
+                try
+                {
+                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_food = config.Health;
+                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodStamina = config.Stamina;
+                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodBurnTime = config.Duration;
+                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodRegen = config.HealthRegen;
+                }
+
+                catch (Exception e)
+                {
+                    Jotunn.Logger.LogError($"Loading config for {config.FoodPrefabName} failed. {e.Message} {e.StackTrace}");
+                }
+            }
+            Jotunn.Logger.LogInfo("Updated Custom configs");
+        }
 
         internal static List<FoodConfig> GetJson()
         {
@@ -778,6 +813,14 @@ namespace OldFoodStats
             Jotunn.Logger.LogDebug("File found. Attempting to deserialize...");
             var foodconfigs = JsonMapper.ToObject<List<FoodConfig>>(jsonText);
             return foodconfigs;
+        }
+        internal static List<FoodConfig> GetCustomJson()
+        {
+            Jotunn.Logger.LogDebug($"Attempting to load config file from path {configPath}");
+            var jsonText = AssetUtils.LoadText(CustomconfigPath);
+            Jotunn.Logger.LogDebug("File found. Attempting to deserialize...");
+            var foodcustomconfigs = JsonMapper.ToObject<List<FoodConfig>>(jsonText);
+            return foodcustomconfigs;
         }
 
         public static ConfigEntry<bool> Hidefork;
