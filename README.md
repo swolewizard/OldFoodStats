@@ -1,6 +1,6 @@
-![](https://i.imgur.com/4XooUJw.png)
 
-# OOld Food Stats
+
+# Old Food Stats
  My Valheim mod from here: [https://www.nexusmods.com/valheim/mods/1482](https://www.nexusmods.com/valheim/mods/1482)
  
 # Contribute
