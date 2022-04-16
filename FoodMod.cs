@@ -74,7 +74,7 @@ namespace OldFoodStats
 
             LoadConfig();
             ItemManager.OnItemsRegistered += RegisterConfigValues;
-            PrefabManager.OnPrefabsRegistered += RegisterConfigValues;
+            PrefabManager.OnVanillaPrefabsAvailable += RegisterConfigValues;
             SaveButton.SettingChanged += UpdateSettings;
         }
         public void UpdateSettings(object sender, EventArgs e)
