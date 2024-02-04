@@ -18,12 +18,14 @@ namespace OldFoodStats
     public class FoodMod : BaseUnityPlugin
     {
         private const string ModName = "Huntards H&H Old Food Stats";
-        private const string ModVersion = "2.0.4";
+        private const string ModVersion = "3.0.0";
         private const string ModGUID = "Huntard.OldFoodStats";
 
         public static string configPath = Path.Combine(BepInEx.Paths.ConfigPath, $"{ModGUID}.json");
         public static string CustomconfigPath = Path.Combine(BepInEx.Paths.ConfigPath, $"{ModGUID}Custom.json");
         private Harmony _harmony;
+
+        private List<FoodConfig> foodStats = new List<FoodConfig>();
 
         [HarmonyPatch(typeof(InventoryGrid), "UpdateGui")]
         public class InventoryGrid_UpdateGui
@@ -73,33 +75,126 @@ namespace OldFoodStats
             Hidefork = base.Config.Bind<bool>("General", "Hide fork icon", false, new ConfigDescription("Hides food icon on food.", null));
             SaveButton = base.Config.Bind<bool>("General", "Save Config Values", false, new ConfigDescription("Toggle this boolean to re-apply your configuration values, can be done in-game.", null));
 
+
             LoadConfig();
             PrefabManager.OnVanillaPrefabsAvailable += RegisterConfigValues;
+            PrefabManager.OnVanillaPrefabsAvailable += ScanAndGenerateConsumables;
             ZoneManager.OnVanillaLocationsAvailable += RegisterConfigValues;
             ZoneManager.OnVanillaLocationsAvailable += RegisterCustomConfigValues;
             SaveButton.SettingChanged += UpdateSettings;
         }
-        public void UpdateSettings(object sender, EventArgs e)
-        {
-            Jotunn.Logger.LogInfo("Updating...");
-            this.RegisterConfigValues();
-            this.RegisterCustomConfigValues();
-        }
-
         private void LoadConfig()
         {
             if (!File.Exists(configPath))
             {
                 GenerateConfigFileFirst();
-                Jotunn.Logger.LogInfo("Generated config");
+                Jotunn.Logger.LogInfo("Generated Config");
             }
             if (!File.Exists(CustomconfigPath))
             {
                 GenerateCustomConfig();
-                Jotunn.Logger.LogInfo("Generated Custom config");
+                Jotunn.Logger.LogInfo("Generated Custom Config");
             }
             return;
         }
+
+        private void RegisterConfigValues()
+        {
+            UpdateConfigValues(configPath, "Updated Configs");
+        }
+
+        private void ScanAndGenerateConsumables()
+        {
+            foodStats.Clear();
+
+            var allGameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+
+            foreach (var go in allGameObjects)
+            {
+                var itemDrop = go.GetComponent<ItemDrop>();
+                if (itemDrop != null && itemDrop.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Consumable)
+                {
+                    foodStats.Add(new FoodConfig
+                    {
+                        FoodPrefabName = itemDrop.name,
+                        Health = itemDrop.m_itemData.m_shared.m_food,
+                        Stamina = itemDrop.m_itemData.m_shared.m_foodStamina,
+                        Duration = itemDrop.m_itemData.m_shared.m_foodBurnTime,
+                        HealthRegen = itemDrop.m_itemData.m_shared.m_foodRegen,
+                        FoodEitr = itemDrop.m_itemData.m_shared.m_foodEitr
+                    });
+                }
+            }
+
+            string jsonText = JsonMapper.ToJson(foodStats);
+
+            File.WriteAllText(configPath, jsonText);
+        }
+
+        private void RegisterCustomConfigValues()
+        {
+            UpdateConfigValues(CustomconfigPath, "Updated Custom Configs");
+        }
+
+        private void GenerateConfigFileFirst()
+        {
+            var foodConfigs = new List<FoodConfig>();
+
+            Dictionary<string, (int Health, int Stamina, int Duration, int HealthRegen, int FoodEitr)> foodValues = new Dictionary<string, (int, int, int, int, int)>
+            {
+                { "SerpentStew", (80, 80, 2400, 4, 0) },
+                { "LoxPie", (80, 80, 2400, 4, 0) },
+                { "FishWraps", (60, 90, 2400, 4, 0) },
+                { "BloodPudding", (90, 50, 2400, 4, 0) },
+                { "SerpentMeatCooked", (70, 40, 2000, 3, 0) },
+                { "CookedLoxMeat", (70, 40, 2000, 3, 0) },
+                { "Bread", (40, 70, 1800, 2, 0) },
+                { "TurnipStew", (50, 50, 1600, 2, 0) },
+                { "Sausages", (60, 40, 1600, 3, 0) },
+                { "CarrotSoup", (20, 60, 1500, 2, 0) },
+                { "QueensJam", (30, 40, 1200, 2, 0) },
+                { "NeckTailGrilled", (35, 20, 1000, 2, 0) },
+                { "CookedMeat", (40, 30, 1200, 2, 0) },
+                { "FishCooked", (45, 25, 1200, 2, 0) },
+                { "MushroomYellow", (20, 20, 600, 1, 0) },
+                { "MushroomBlue", (20, 20, 600, 1, 0) },
+                { "Mushroom", (15, 25, 600, 1, 0) },
+                { "Honey", (20, 20, 300, 5, 0) },
+                { "Cloudberry", (15, 25, 800, 1, 0) },
+                { "Blueberries", (15, 20, 600, 1, 0) },
+                { "Raspberry", (10, 20, 600, 1, 0) },
+                { "Carrot", (15, 15, 600, 1, 0) },
+                { "CookedWolfMeat", (45, 35, 1200, 3, 0) },
+                { "CookedDeerMeat", (40, 30, 1200, 2, 0) },
+                { "BlackSoup", (50, 50, 1200, 3, 0) },
+                { "DeerStew", (60, 45, 1500, 3, 0) },
+                { "Eyescream", (40, 65, 1500, 1, 0) },
+                { "MinceMeatSauce", (45, 30, 1500, 3, 0) },
+                { "OnionSoup", (40, 60, 1500, 1, 0) },
+                { "ShocklateSmoothie", (40, 50, 1200, 1, 0) },
+                { "WolfMeatSkewer", (65, 40, 1500, 3, 0) },
+                { "WolfJerky", (35, 35, 1800, 1, 0) },
+                { "BoarJerky", (25, 25, 1800, 1, 0) }
+            };
+
+            foreach (var kvp in foodValues)
+            {
+                var foodConfig = new FoodConfig
+                {
+                    FoodPrefabName = kvp.Key,
+                    Health = kvp.Value.Health,
+                    Stamina = kvp.Value.Stamina,
+                    Duration = kvp.Value.Duration,
+                    HealthRegen = kvp.Value.HealthRegen,
+                    FoodEitr = kvp.Value.FoodEitr
+                };
+                foodConfigs.Add(foodConfig);
+            }
+
+            var jsonText = JsonMapper.ToJson(foodConfigs);
+            File.WriteAllText(configPath, jsonText);
+        }
+
         private void GenerateCustomConfig()
         {
 
@@ -108,719 +203,60 @@ namespace OldFoodStats
             File.WriteAllText(CustomconfigPath, jsonText);
 
         }
-        private void GenerateConfigFileFirst()
+
+        private void UpdateConfigValues(string path, string logMessage)
         {
-
-            var foodConfigs = new List<FoodConfig>();
-
-            //Serpent Stew
-            var serpentstewConfig = new FoodConfig();
-            serpentstewConfig.FoodPrefabName = "SerpentStew";
-            serpentstewConfig.Health = 80;
-            serpentstewConfig.Stamina = 80;
-            serpentstewConfig.Duration = 2400;
-            serpentstewConfig.HealthRegen = 4;
-            foodConfigs.Add(serpentstewConfig);
-
-            //Lox Pie
-            var loxpieConfig = new FoodConfig();
-            loxpieConfig.FoodPrefabName = "LoxPie";
-            loxpieConfig.Health = 80;
-            loxpieConfig.Stamina = 80;
-            loxpieConfig.Duration = 2400;
-            loxpieConfig.HealthRegen = 4;
-            foodConfigs.Add(loxpieConfig);
-
-            //Fish Wrap
-            var fishwrapConfig = new FoodConfig();
-            fishwrapConfig.FoodPrefabName = "FishWraps";
-            fishwrapConfig.Health = 60;
-            fishwrapConfig.Stamina = 90;
-            fishwrapConfig.Duration = 2400;
-            fishwrapConfig.HealthRegen = 4;
-            foodConfigs.Add(fishwrapConfig);
-
-            //Blood Pudding
-            var bloodpuddingConfig = new FoodConfig();
-            bloodpuddingConfig.FoodPrefabName = "BloodPudding";
-            bloodpuddingConfig.Health = 90;
-            bloodpuddingConfig.Stamina = 50;
-            bloodpuddingConfig.Duration = 2400;
-            bloodpuddingConfig.HealthRegen = 4;
-            foodConfigs.Add(bloodpuddingConfig);
-
-            //Cooked SerpentMeat
-            var cookedserpentmeatConfig = new FoodConfig();
-            cookedserpentmeatConfig.FoodPrefabName = "SerpentMeatCooked";
-            cookedserpentmeatConfig.Health = 70;
-            cookedserpentmeatConfig.Stamina = 40;
-            cookedserpentmeatConfig.Duration = 2000;
-            cookedserpentmeatConfig.HealthRegen = 3;
-            foodConfigs.Add(cookedserpentmeatConfig);
-
-            //Cooked LoxMeat
-            var cookedloxmeatConfig = new FoodConfig();
-            cookedloxmeatConfig.FoodPrefabName = "CookedLoxMeat";
-            cookedloxmeatConfig.Health = 70;
-            cookedloxmeatConfig.Stamina = 40;
-            cookedloxmeatConfig.Duration = 2000;
-            cookedloxmeatConfig.HealthRegen = 3;
-            foodConfigs.Add(cookedloxmeatConfig);
-
-            //Bread
-            var breadConfig = new FoodConfig();
-            breadConfig.FoodPrefabName = "Bread";
-            breadConfig.Health = 40;
-            breadConfig.Stamina = 70;
-            breadConfig.Duration = 1800;
-            breadConfig.HealthRegen = 2;
-            foodConfigs.Add(breadConfig);
-
-            //Turnip Stew
-            var turnipstewConfig = new FoodConfig();
-            turnipstewConfig.FoodPrefabName = "TurnipStew";
-            turnipstewConfig.Health = 50;
-            turnipstewConfig.Stamina = 50;
-            turnipstewConfig.Duration = 1600;
-            turnipstewConfig.HealthRegen = 2;
-            foodConfigs.Add(turnipstewConfig);
-
-            //Sausages
-            var sausagesConfig = new FoodConfig();
-            sausagesConfig.FoodPrefabName = "Sausages";
-            sausagesConfig.Health = 60;
-            sausagesConfig.Stamina = 40;
-            sausagesConfig.Duration = 1600;
-            sausagesConfig.HealthRegen = 3;
-            foodConfigs.Add(sausagesConfig);
-
-            //Carrot Soup
-            var carrotsoupConfig = new FoodConfig();
-            carrotsoupConfig.FoodPrefabName = "CarrotSoup";
-            carrotsoupConfig.Health = 20;
-            carrotsoupConfig.Stamina = 60;
-            carrotsoupConfig.Duration = 1500;
-            carrotsoupConfig.HealthRegen = 2;
-            foodConfigs.Add(carrotsoupConfig);
-
-            //Queens Jam
-            var queensjamConfig = new FoodConfig();
-            queensjamConfig.FoodPrefabName = "QueensJam";
-            queensjamConfig.Health = 30;
-            queensjamConfig.Stamina = 40;
-            queensjamConfig.Duration = 1200;
-            queensjamConfig.HealthRegen = 2;
-            foodConfigs.Add(queensjamConfig);
-
-            //Grilled Neck Tail
-            var grillednecktailConfig = new FoodConfig();
-            grillednecktailConfig.FoodPrefabName = "NeckTailGrilled";
-            grillednecktailConfig.Health = 35;
-            grillednecktailConfig.Stamina = 20;
-            grillednecktailConfig.Duration = 1000;
-            grillednecktailConfig.HealthRegen = 2;
-            foodConfigs.Add(grillednecktailConfig);
-
-            //Cooked Boar Meat
-            var cookedboarmeatConfig = new FoodConfig();
-            cookedboarmeatConfig.FoodPrefabName = "CookedMeat";
-            cookedboarmeatConfig.Health = 40;
-            cookedboarmeatConfig.Stamina = 30;
-            cookedboarmeatConfig.Duration = 1200;
-            cookedboarmeatConfig.HealthRegen = 2;
-            foodConfigs.Add(cookedboarmeatConfig);
-
-            //Cooked Fish
-            var cookedfishConfig = new FoodConfig();
-            cookedfishConfig.FoodPrefabName = "FishCooked";
-            cookedfishConfig.Health = 45;
-            cookedfishConfig.Stamina = 25;
-            cookedfishConfig.Duration = 1200;
-            cookedfishConfig.HealthRegen = 2;
-            foodConfigs.Add(cookedfishConfig);
-
-            //Mushroom Yellow
-            var mushroomyellowConfig = new FoodConfig();
-            mushroomyellowConfig.FoodPrefabName = "MushroomYellow";
-            mushroomyellowConfig.Health = 20;
-            mushroomyellowConfig.Stamina = 20;
-            mushroomyellowConfig.Duration = 600;
-            mushroomyellowConfig.HealthRegen = 1;
-            foodConfigs.Add(mushroomyellowConfig);
-
-            //Mushroom Blue
-            var mushroomBlueConfig = new FoodConfig();
-            mushroomBlueConfig.FoodPrefabName = "MushroomBlue";
-            mushroomBlueConfig.Health = 20;
-            mushroomBlueConfig.Stamina = 20;
-            mushroomBlueConfig.Duration = 600;
-            mushroomBlueConfig.HealthRegen = 1;
-            foodConfigs.Add(mushroomBlueConfig);
-
-            //Mushroom
-            var mushroomConfig = new FoodConfig();
-            mushroomConfig.FoodPrefabName = "Mushroom";
-            mushroomConfig.Health = 15;
-            mushroomConfig.Stamina = 25;
-            mushroomConfig.Duration = 600;
-            mushroomConfig.HealthRegen = 1;
-            foodConfigs.Add(mushroomConfig);
-
-            //Honey
-            var honeyConfig = new FoodConfig();
-            honeyConfig.FoodPrefabName = "Honey";
-            honeyConfig.Health = 20;
-            honeyConfig.Stamina = 20;
-            honeyConfig.Duration = 300;
-            honeyConfig.HealthRegen = 5;
-            foodConfigs.Add(honeyConfig);
-
-            //Cloudberry
-            var cloudberryConfig = new FoodConfig();
-            cloudberryConfig.FoodPrefabName = "Cloudberry";
-            cloudberryConfig.Health = 15;
-            cloudberryConfig.Stamina = 25;
-            cloudberryConfig.Duration = 800;
-            cloudberryConfig.HealthRegen = 1;
-            foodConfigs.Add(cloudberryConfig);
-
-            //Blueberries
-            var blueberryConfig = new FoodConfig();
-            blueberryConfig.FoodPrefabName = "Blueberries";
-            blueberryConfig.Health = 15;
-            blueberryConfig.Stamina = 20;
-            blueberryConfig.Duration = 600;
-            blueberryConfig.HealthRegen = 1;
-            foodConfigs.Add(blueberryConfig);
-
-            //Raspberry
-            var raspberryConfig = new FoodConfig();
-            raspberryConfig.FoodPrefabName = "Raspberry";
-            raspberryConfig.Health = 10;
-            raspberryConfig.Stamina = 20;
-            raspberryConfig.Duration = 600;
-            raspberryConfig.HealthRegen = 1;
-            foodConfigs.Add(raspberryConfig);
-
-            //Carrot
-            var carrotConfig = new FoodConfig();
-            carrotConfig.FoodPrefabName = "Carrot";
-            carrotConfig.Health = 15;
-            carrotConfig.Stamina = 15;
-            carrotConfig.Duration = 600;
-            carrotConfig.HealthRegen = 1;
-            foodConfigs.Add(carrotConfig);
-
-            //Cooked WolfMeat
-            var cookedwolfmeatConfig = new FoodConfig();
-            cookedwolfmeatConfig.FoodPrefabName = "CookedWolfMeat";
-            cookedwolfmeatConfig.Health = 45;
-            cookedwolfmeatConfig.Stamina = 35;
-            cookedwolfmeatConfig.Duration = 1200;
-            cookedwolfmeatConfig.HealthRegen = 3;
-            foodConfigs.Add(cookedwolfmeatConfig);
-
-            //Cooked DeerMeat
-            var cookeddeermeatConfig = new FoodConfig();
-            cookeddeermeatConfig.FoodPrefabName = "CookedDeerMeat";
-            cookeddeermeatConfig.Health = 40;
-            cookeddeermeatConfig.Stamina = 30;
-            cookeddeermeatConfig.Duration = 1200;
-            cookeddeermeatConfig.HealthRegen = 2;
-            foodConfigs.Add(cookeddeermeatConfig);
-
-            //Black Soup
-            var blacksoupConfig = new FoodConfig();
-            blacksoupConfig.FoodPrefabName = "BlackSoup";
-            blacksoupConfig.Health = 50;
-            blacksoupConfig.Stamina = 50;
-            blacksoupConfig.Duration = 1200;
-            blacksoupConfig.HealthRegen = 3;
-            foodConfigs.Add(blacksoupConfig);
-
-            //Deer Stew
-            var deerstewConfig = new FoodConfig();
-            deerstewConfig.FoodPrefabName = "DeerStew";
-            deerstewConfig.Health = 60;
-            deerstewConfig.Stamina = 45;
-            deerstewConfig.Duration = 1500;
-            deerstewConfig.HealthRegen = 3;
-            foodConfigs.Add(deerstewConfig);
-
-            //Eyescream
-            var eyescreamConfig = new FoodConfig();
-            eyescreamConfig.FoodPrefabName = "Eyescream";
-            eyescreamConfig.Health = 40;
-            eyescreamConfig.Stamina = 65;
-            eyescreamConfig.Duration = 1500;
-            eyescreamConfig.HealthRegen = 1;
-            foodConfigs.Add(eyescreamConfig);
-
-            //MinceMeatSauce
-            var mincemeatsauceConfig = new FoodConfig();
-            mincemeatsauceConfig.FoodPrefabName = "MinceMeatSauce";
-            mincemeatsauceConfig.Health = 45;
-            mincemeatsauceConfig.Stamina = 30;
-            mincemeatsauceConfig.Duration = 1500;
-            mincemeatsauceConfig.HealthRegen = 3;
-            foodConfigs.Add(mincemeatsauceConfig);
-
-            //Onion Soup
-            var onionsoupConfig = new FoodConfig();
-            onionsoupConfig.FoodPrefabName = "OnionSoup";
-            onionsoupConfig.Health = 40;
-            onionsoupConfig.Stamina = 60;
-            onionsoupConfig.Duration = 1500;
-            onionsoupConfig.HealthRegen = 1;
-            foodConfigs.Add(onionsoupConfig);
-
-            //Muck Shake
-            var muchshakeConfig = new FoodConfig();
-            muchshakeConfig.FoodPrefabName = "ShocklateSmoothie";
-            muchshakeConfig.Health = 40;
-            muchshakeConfig.Stamina = 50;
-            muchshakeConfig.Duration = 1200;
-            muchshakeConfig.HealthRegen = 1;
-            foodConfigs.Add(muchshakeConfig);
-
-            //Wolf Meat Skewer
-            var wolfmeatskewerConfig = new FoodConfig();
-            wolfmeatskewerConfig.FoodPrefabName = "WolfMeatSkewer";
-            wolfmeatskewerConfig.Health = 65;
-            wolfmeatskewerConfig.Stamina = 40;
-            wolfmeatskewerConfig.Duration = 1500;
-            wolfmeatskewerConfig.HealthRegen = 3;
-            foodConfigs.Add(wolfmeatskewerConfig);
-
-            //Wolf Jerky
-            var wolfjerkyConfig = new FoodConfig();
-            wolfjerkyConfig.FoodPrefabName = "WolfJerky";
-            wolfjerkyConfig.Health = 35;
-            wolfjerkyConfig.Stamina = 35;
-            wolfjerkyConfig.Duration = 1800;
-            wolfjerkyConfig.HealthRegen = 1;
-            foodConfigs.Add(wolfjerkyConfig);
-
-            //Boar Jerky
-            var boarjerkyConfig = new FoodConfig();
-            boarjerkyConfig.FoodPrefabName = "BoarJerky";
-            boarjerkyConfig.Health = 25;
-            boarjerkyConfig.Stamina = 25;
-            boarjerkyConfig.Duration = 1800;
-            boarjerkyConfig.HealthRegen = 1;
-            foodConfigs.Add(boarjerkyConfig);
-
-
-            var jsonText = JsonMapper.ToJson(foodConfigs);
-            File.WriteAllText(configPath, jsonText);
-
-        }
-
-        private void GenerateConfigFile()
-        {
-
-            var foodConfigs = new List<FoodConfig>();
-
-            //Serpent Stew
-            var serpentstewConfig = new FoodConfig();
-            var serpentstewPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("SerpentStew");
-            serpentstewConfig.FoodPrefabName = "SerpentStew";
-            serpentstewConfig.Health = (int)serpentstewPrefab.m_itemData.m_shared.m_food;
-            serpentstewConfig.Stamina = (int)serpentstewPrefab.m_itemData.m_shared.m_foodStamina;
-            serpentstewConfig.Duration = (int)serpentstewPrefab.m_itemData.m_shared.m_foodBurnTime;
-            serpentstewConfig.HealthRegen = (int)serpentstewPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(serpentstewConfig);
-
-            //Lox Pie
-            var loxpieConfig = new FoodConfig();
-            var loxpiePrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("LoxPie");
-            loxpieConfig.FoodPrefabName = "LoxPie";
-            loxpieConfig.Health = (int)loxpiePrefab.m_itemData.m_shared.m_food;
-            loxpieConfig.Stamina = (int)loxpiePrefab.m_itemData.m_shared.m_foodStamina;
-            loxpieConfig.Duration = (int)loxpiePrefab.m_itemData.m_shared.m_foodBurnTime;
-            loxpieConfig.HealthRegen = (int)loxpiePrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(loxpieConfig);
-
-            //Fish Wrap
-            var fishwrapConfig = new FoodConfig();
-            var fishwrapPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("FishWraps");
-            fishwrapConfig.FoodPrefabName = "FishWraps";
-            fishwrapConfig.Health = (int)fishwrapPrefab.m_itemData.m_shared.m_food;
-            fishwrapConfig.Stamina = (int)fishwrapPrefab.m_itemData.m_shared.m_foodStamina;
-            fishwrapConfig.Duration = (int)fishwrapPrefab.m_itemData.m_shared.m_foodBurnTime;
-            fishwrapConfig.HealthRegen = (int)fishwrapPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(fishwrapConfig);
-
-            //Blood Pudding
-            var bloodpuddingConfig = new FoodConfig();
-            var bloodpuddingPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("BloodPudding");
-            bloodpuddingConfig.FoodPrefabName = "BloodPudding";
-            bloodpuddingConfig.Health = (int)bloodpuddingPrefab.m_itemData.m_shared.m_food;
-            bloodpuddingConfig.Stamina = (int)bloodpuddingPrefab.m_itemData.m_shared.m_foodStamina;
-            bloodpuddingConfig.Duration = (int)bloodpuddingPrefab.m_itemData.m_shared.m_foodBurnTime;
-            bloodpuddingConfig.HealthRegen = (int)bloodpuddingPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(bloodpuddingConfig);
-
-            //Cooked SerpentMeat
-            var cookedserpentmeatConfig = new FoodConfig();
-            var cookedserpentmeatPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("SerpentMeatCooked");
-            cookedserpentmeatConfig.FoodPrefabName = "SerpentMeatCooked";
-            cookedserpentmeatConfig.Health = (int)cookedserpentmeatPrefab.m_itemData.m_shared.m_food;
-            cookedserpentmeatConfig.Stamina = (int)cookedserpentmeatPrefab.m_itemData.m_shared.m_foodStamina;
-            cookedserpentmeatConfig.Duration = (int)cookedserpentmeatPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cookedserpentmeatConfig.HealthRegen = (int)cookedserpentmeatPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cookedserpentmeatConfig);
-
-            //Cooked LoxMeat
-            var cookedloxmeatConfig = new FoodConfig();
-            var cookedloxmeatPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("CookedLoxMeat");
-            cookedloxmeatConfig.FoodPrefabName = "CookedLoxMeat";
-            cookedloxmeatConfig.Health = (int)cookedloxmeatPrefab.m_itemData.m_shared.m_food;
-            cookedloxmeatConfig.Stamina = (int)cookedloxmeatPrefab.m_itemData.m_shared.m_foodStamina;
-            cookedloxmeatConfig.Duration = (int)cookedloxmeatPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cookedloxmeatConfig.HealthRegen = (int)cookedloxmeatPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cookedloxmeatConfig);
-
-            //Bread
-            var breadConfig = new FoodConfig();
-            var breadPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Bread");
-            breadConfig.FoodPrefabName = "Bread";
-            breadConfig.Health = (int)breadPrefab.m_itemData.m_shared.m_food;
-            breadConfig.Stamina = (int)breadPrefab.m_itemData.m_shared.m_foodStamina;
-            breadConfig.Duration = (int)breadPrefab.m_itemData.m_shared.m_foodBurnTime;
-            breadConfig.HealthRegen = (int)breadPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(breadConfig);
-
-            //Turnip Stew
-            var turnipstewConfig = new FoodConfig();
-            var turnipstewPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("TurnipStew");
-            turnipstewConfig.FoodPrefabName = "TurnipStew";
-            turnipstewConfig.Health = (int)turnipstewPrefab.m_itemData.m_shared.m_food;
-            turnipstewConfig.Stamina = (int)turnipstewPrefab.m_itemData.m_shared.m_foodStamina;
-            turnipstewConfig.Duration = (int)turnipstewPrefab.m_itemData.m_shared.m_foodBurnTime;
-            turnipstewConfig.HealthRegen = (int)turnipstewPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(turnipstewConfig);
-
-            //Sausages
-            var sausagesConfig = new FoodConfig();
-            var sausagesPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Sausages");
-            sausagesConfig.FoodPrefabName = "Sausages";
-            sausagesConfig.Health = (int)sausagesPrefab.m_itemData.m_shared.m_food;
-            sausagesConfig.Stamina = (int)sausagesPrefab.m_itemData.m_shared.m_foodStamina;
-            sausagesConfig.Duration = (int)sausagesPrefab.m_itemData.m_shared.m_foodBurnTime;
-            sausagesConfig.HealthRegen = (int)sausagesPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(sausagesConfig);
-
-            //Carrot Soup
-            var carrotsoupConfig = new FoodConfig();
-            var carrotsoupPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("CarrotSoup");
-            carrotsoupConfig.FoodPrefabName = "CarrotSoup";
-            carrotsoupConfig.Health = (int)carrotsoupPrefab.m_itemData.m_shared.m_food;
-            carrotsoupConfig.Stamina = (int)carrotsoupPrefab.m_itemData.m_shared.m_foodStamina;
-            carrotsoupConfig.Duration = (int)carrotsoupPrefab.m_itemData.m_shared.m_foodBurnTime;
-            carrotsoupConfig.HealthRegen = (int)carrotsoupPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(carrotsoupConfig);
-
-            //Queens Jam
-            var queensjamConfig = new FoodConfig();
-            var queensjamPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("QueensJam");
-            queensjamConfig.FoodPrefabName = "QueensJam";
-            queensjamConfig.Health = (int)queensjamPrefab.m_itemData.m_shared.m_food;
-            queensjamConfig.Stamina = (int)queensjamPrefab.m_itemData.m_shared.m_foodStamina;
-            queensjamConfig.Duration = (int)queensjamPrefab.m_itemData.m_shared.m_foodBurnTime;
-            queensjamConfig.HealthRegen = (int)queensjamPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(queensjamConfig);
-
-            //Grilled Neck Tail
-            var grillednecktailConfig = new FoodConfig();
-            var grillednecktailPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("NeckTailGrilled");
-            grillednecktailConfig.FoodPrefabName = "NeckTailGrilled";
-            grillednecktailConfig.Health = (int)grillednecktailPrefab.m_itemData.m_shared.m_food;
-            grillednecktailConfig.Stamina = (int)grillednecktailPrefab.m_itemData.m_shared.m_foodStamina;
-            grillednecktailConfig.Duration = (int)grillednecktailPrefab.m_itemData.m_shared.m_foodBurnTime;
-            grillednecktailConfig.HealthRegen = (int)grillednecktailPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(grillednecktailConfig);
-
-            //Cooked Boar Meat
-            var cookedboarmeatConfig = new FoodConfig();
-            var cookedboarmeatPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("CookedMeat");
-            cookedboarmeatConfig.FoodPrefabName = "CookedMeat";
-            cookedboarmeatConfig.Health = (int)cookedboarmeatPrefab.m_itemData.m_shared.m_food;
-            cookedboarmeatConfig.Stamina = (int)cookedboarmeatPrefab.m_itemData.m_shared.m_foodStamina;
-            cookedboarmeatConfig.Duration = (int)cookedboarmeatPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cookedboarmeatConfig.HealthRegen = (int)cookedboarmeatPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cookedboarmeatConfig);
-
-            //Cooked Fish
-            var cookedfishConfig = new FoodConfig();
-            var cookedfishPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("FishCooked");
-            cookedfishConfig.FoodPrefabName = "FishCooked";
-            cookedfishConfig.Health = (int)cookedfishPrefab.m_itemData.m_shared.m_food;
-            cookedfishConfig.Stamina = (int)cookedfishPrefab.m_itemData.m_shared.m_foodStamina;
-            cookedfishConfig.Duration = (int)cookedfishPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cookedfishConfig.HealthRegen = (int)cookedfishPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cookedfishConfig);
-
-            //Mushroom Yellow
-            var mushroomyellowConfig = new FoodConfig();
-            var mushroomyellowPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("MushroomYellow");
-            mushroomyellowConfig.FoodPrefabName = "MushroomYellow";
-            mushroomyellowConfig.Health = (int)mushroomyellowPrefab.m_itemData.m_shared.m_food;
-            mushroomyellowConfig.Stamina = (int)mushroomyellowPrefab.m_itemData.m_shared.m_foodStamina;
-            mushroomyellowConfig.Duration = (int)mushroomyellowPrefab.m_itemData.m_shared.m_foodBurnTime;
-            mushroomyellowConfig.HealthRegen = (int)mushroomyellowPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(mushroomyellowConfig);
-
-            //Mushroom Blue
-            var mushroomBlueConfig = new FoodConfig();
-            var mushroomBluePrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("MushroomBlue");
-            mushroomBlueConfig.FoodPrefabName = "MushroomBlue";
-            mushroomBlueConfig.Health = (int)mushroomBluePrefab.m_itemData.m_shared.m_food;
-            mushroomBlueConfig.Stamina = (int)mushroomBluePrefab.m_itemData.m_shared.m_foodStamina;
-            mushroomBlueConfig.Duration = (int)mushroomBluePrefab.m_itemData.m_shared.m_foodBurnTime;
-            mushroomBlueConfig.HealthRegen = (int)mushroomBluePrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(mushroomBlueConfig);
-
-            //Mushroom
-            var mushroomConfig = new FoodConfig();
-            var mushroomPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Mushroom");
-            mushroomConfig.FoodPrefabName = "Mushroom";
-            mushroomConfig.Health = (int)mushroomPrefab.m_itemData.m_shared.m_food;
-            mushroomConfig.Stamina = (int)mushroomPrefab.m_itemData.m_shared.m_foodStamina;
-            mushroomConfig.Duration = (int)mushroomPrefab.m_itemData.m_shared.m_foodBurnTime;
-            mushroomConfig.HealthRegen = (int)mushroomPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(mushroomConfig);
-
-            //Honey
-            var honeyConfig = new FoodConfig();
-            var honeyPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Honey");
-            honeyConfig.FoodPrefabName = "Honey";
-            honeyConfig.Health = (int)honeyPrefab.m_itemData.m_shared.m_food;
-            honeyConfig.Stamina = (int)honeyPrefab.m_itemData.m_shared.m_foodStamina;
-            honeyConfig.Duration = (int)honeyPrefab.m_itemData.m_shared.m_foodBurnTime;
-            honeyConfig.HealthRegen = (int)honeyPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(honeyConfig);
-
-            //Cloudberry
-            var cloudberryConfig = new FoodConfig();
-            var cloudberryPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Cloudberry");
-            cloudberryConfig.FoodPrefabName = "Cloudberry";
-            cloudberryConfig.Health = (int)cloudberryPrefab.m_itemData.m_shared.m_food;
-            cloudberryConfig.Stamina = (int)cloudberryPrefab.m_itemData.m_shared.m_foodStamina;
-            cloudberryConfig.Duration = (int)cloudberryPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cloudberryConfig.HealthRegen = (int)cloudberryPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cloudberryConfig);
-
-            //Blueberries
-            var blueberryConfig = new FoodConfig();
-            var blueberryPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Blueberries");
-            blueberryConfig.FoodPrefabName = "Blueberries";
-            blueberryConfig.Health = (int)blueberryPrefab.m_itemData.m_shared.m_food;
-            blueberryConfig.Stamina = (int)blueberryPrefab.m_itemData.m_shared.m_foodStamina;
-            blueberryConfig.Duration = (int)blueberryPrefab.m_itemData.m_shared.m_foodBurnTime;
-            blueberryConfig.HealthRegen = (int)blueberryPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(blueberryConfig);
-
-            //Raspberry
-            var raspberryConfig = new FoodConfig();
-            var raspberryPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Raspberry");
-            raspberryConfig.FoodPrefabName = "Raspberry";
-            raspberryConfig.Health = (int)raspberryPrefab.m_itemData.m_shared.m_food;
-            raspberryConfig.Stamina = (int)raspberryPrefab.m_itemData.m_shared.m_foodStamina;
-            raspberryConfig.Duration = (int)raspberryPrefab.m_itemData.m_shared.m_foodBurnTime;
-            raspberryConfig.HealthRegen = (int)raspberryPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(raspberryConfig);
-
-            //Carrot
-            var carrotConfig = new FoodConfig();
-            var carrotPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Carrot");
-            carrotConfig.FoodPrefabName = "Carrot";
-            carrotConfig.Health = (int)carrotPrefab.m_itemData.m_shared.m_food;
-            carrotConfig.Stamina = (int)carrotPrefab.m_itemData.m_shared.m_foodStamina;
-            carrotConfig.Duration = (int)carrotPrefab.m_itemData.m_shared.m_foodBurnTime;
-            carrotConfig.HealthRegen = (int)carrotPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(carrotConfig);
-
-            //Cooked WolfMeat
-            var cookedwolfmeatConfig = new FoodConfig();
-            var cookedwolfmeatPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("CookedWolfMeat");
-            cookedwolfmeatConfig.FoodPrefabName = "CookedWolfMeat";
-            cookedwolfmeatConfig.Health = (int)cookedwolfmeatPrefab.m_itemData.m_shared.m_food;
-            cookedwolfmeatConfig.Stamina = (int)cookedwolfmeatPrefab.m_itemData.m_shared.m_foodStamina;
-            cookedwolfmeatConfig.Duration = (int)cookedwolfmeatPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cookedwolfmeatConfig.HealthRegen = (int)cookedwolfmeatPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cookedwolfmeatConfig);
-
-            //Cooked DeerMeat
-            var cookeddeermeatConfig = new FoodConfig();
-            var cookeddeermeatPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("CookedDeerMeat");
-            cookeddeermeatConfig.FoodPrefabName = "CookedDeerMeat";
-            cookeddeermeatConfig.Health = (int)cookeddeermeatPrefab.m_itemData.m_shared.m_food;
-            cookeddeermeatConfig.Stamina = (int)cookeddeermeatPrefab.m_itemData.m_shared.m_foodStamina;
-            cookeddeermeatConfig.Duration = (int)cookeddeermeatPrefab.m_itemData.m_shared.m_foodBurnTime;
-            cookeddeermeatConfig.HealthRegen = (int)cookeddeermeatPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(cookeddeermeatConfig);
-
-            //Black Soup
-            var blacksoupConfig = new FoodConfig();
-            var blacksoupPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("BlackSoup");
-            blacksoupConfig.FoodPrefabName = "BlackSoup";
-            blacksoupConfig.Health = (int)blacksoupPrefab.m_itemData.m_shared.m_food;
-            blacksoupConfig.Stamina = (int)blacksoupPrefab.m_itemData.m_shared.m_foodStamina;
-            blacksoupConfig.Duration = (int)blacksoupPrefab.m_itemData.m_shared.m_foodBurnTime;
-            blacksoupConfig.HealthRegen = (int)blacksoupPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(blacksoupConfig);
-
-            //Deer Stew
-            var deerstewConfig = new FoodConfig();
-            var deerstewPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("DeerStew");
-            deerstewConfig.FoodPrefabName = "DeerStew";
-            deerstewConfig.Health = (int)deerstewPrefab.m_itemData.m_shared.m_food;
-            deerstewConfig.Stamina = (int)deerstewPrefab.m_itemData.m_shared.m_foodStamina;
-            deerstewConfig.Duration = (int)deerstewPrefab.m_itemData.m_shared.m_foodBurnTime;
-            deerstewConfig.HealthRegen = (int)deerstewPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(deerstewConfig);
-
-            //Eyescream
-            var eyescreamConfig = new FoodConfig();
-            var eyescreamPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("Eyescream");
-            eyescreamConfig.FoodPrefabName = "Eyescream";
-            eyescreamConfig.Health = (int)eyescreamPrefab.m_itemData.m_shared.m_food;
-            eyescreamConfig.Stamina = (int)eyescreamPrefab.m_itemData.m_shared.m_foodStamina;
-            eyescreamConfig.Duration = (int)eyescreamPrefab.m_itemData.m_shared.m_foodBurnTime;
-            eyescreamConfig.HealthRegen = (int)eyescreamPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(eyescreamConfig);
-
-            //MinceMeatSauce
-            var mincemeatsauceConfig = new FoodConfig();
-            var mincemeatsaucePrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("MinceMeatSauce");
-            mincemeatsauceConfig.FoodPrefabName = "MinceMeatSauce";
-            mincemeatsauceConfig.Health = (int)mincemeatsaucePrefab.m_itemData.m_shared.m_food;
-            mincemeatsauceConfig.Stamina = (int)mincemeatsaucePrefab.m_itemData.m_shared.m_foodStamina;
-            mincemeatsauceConfig.Duration = (int)mincemeatsaucePrefab.m_itemData.m_shared.m_foodBurnTime;
-            mincemeatsauceConfig.HealthRegen = (int)mincemeatsaucePrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(mincemeatsauceConfig);
-
-            //Onion Soup
-            var onionsoupConfig = new FoodConfig();
-            var onionsoupPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("OnionSoup");
-            onionsoupConfig.FoodPrefabName = "OnionSoup";
-            onionsoupConfig.Health = (int)onionsoupPrefab.m_itemData.m_shared.m_food;
-            onionsoupConfig.Stamina = (int)onionsoupPrefab.m_itemData.m_shared.m_foodStamina;
-            onionsoupConfig.Duration = (int)onionsoupPrefab.m_itemData.m_shared.m_foodBurnTime;
-            onionsoupConfig.HealthRegen = (int)onionsoupPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(onionsoupConfig);
-
-            //Muck Shake
-            var muchshakeConfig = new FoodConfig();
-            var muchshakePrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("ShocklateSmoothie");
-            muchshakeConfig.FoodPrefabName = "ShocklateSmoothie";
-            muchshakeConfig.Health = (int)muchshakePrefab.m_itemData.m_shared.m_food;
-            muchshakeConfig.Stamina = (int)muchshakePrefab.m_itemData.m_shared.m_foodStamina;
-            muchshakeConfig.Duration = (int)muchshakePrefab.m_itemData.m_shared.m_foodBurnTime;
-            muchshakeConfig.HealthRegen = (int)muchshakePrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(muchshakeConfig);
-
-            //Wolf Meat Skewer
-            var wolfmeatskewerConfig = new FoodConfig();
-            var wolfmeatskewerPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("WolfMeatSkewer");
-            wolfmeatskewerConfig.FoodPrefabName = "WolfMeatSkewer";
-            wolfmeatskewerConfig.Health = (int)wolfmeatskewerPrefab.m_itemData.m_shared.m_food;
-            wolfmeatskewerConfig.Stamina = (int)wolfmeatskewerPrefab.m_itemData.m_shared.m_foodStamina;
-            wolfmeatskewerConfig.Duration = (int)wolfmeatskewerPrefab.m_itemData.m_shared.m_foodBurnTime;
-            wolfmeatskewerConfig.HealthRegen = (int)wolfmeatskewerPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(wolfmeatskewerConfig);
-
-            //Wolf Jerky
-            var wolfjerkyConfig = new FoodConfig();
-            var wolfjerkyPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("WolfJerky");
-            wolfjerkyConfig.FoodPrefabName = "WolfJerky";
-            wolfjerkyConfig.Health = (int)wolfjerkyPrefab.m_itemData.m_shared.m_food;
-            wolfjerkyConfig.Stamina = (int)wolfjerkyPrefab.m_itemData.m_shared.m_foodStamina;
-            wolfjerkyConfig.Duration = (int)wolfjerkyPrefab.m_itemData.m_shared.m_foodBurnTime;
-            wolfjerkyConfig.HealthRegen = (int)wolfjerkyPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(wolfjerkyConfig);
-
-            //Boar Jerky
-            var boarjerkyConfig = new FoodConfig();
-            var boarjerkyPrefab = PrefabManager.Cache.GetPrefab<ItemDrop>("BoarJerky");
-            boarjerkyConfig.FoodPrefabName = "BoarJerky";
-            boarjerkyConfig.Health = (int)boarjerkyPrefab.m_itemData.m_shared.m_food;
-            boarjerkyConfig.Stamina = (int)boarjerkyPrefab.m_itemData.m_shared.m_foodStamina;
-            boarjerkyConfig.Duration = (int)boarjerkyPrefab.m_itemData.m_shared.m_foodBurnTime;
-            boarjerkyConfig.HealthRegen = (int)boarjerkyPrefab.m_itemData.m_shared.m_foodRegen;
-            foodConfigs.Add(boarjerkyConfig);
-
-
-            var jsonText = JsonMapper.ToJson(foodConfigs);
-            File.WriteAllText(configPath, jsonText);
-
-        }
-
-        private void RegisterConfigValues()
-        {
-            var foodConfigs = GetJson();
+            var foodConfigs = GetJson(path);
 
             foreach (var config in foodConfigs)
             {
                 try
                 {
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_food = config.Health;
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodStamina = config.Stamina;
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodBurnTime = config.Duration;
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodRegen = config.HealthRegen;
-                }
+                    var prefab = PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName);
+                    var shared = prefab.m_itemData.m_shared;
 
+                    shared.m_food = config.Health;
+                    shared.m_foodStamina = config.Stamina;
+                    shared.m_foodBurnTime = config.Duration;
+                    shared.m_foodRegen = config.HealthRegen;
+                    shared.m_foodEitr = config.FoodEitr;
+                }
                 catch (Exception e)
                 {
-                    Jotunn.Logger.LogError($"Loading config for {config.FoodPrefabName} failed. {e.Message} {e.StackTrace}");
+                    string errorMessage;
+                    if (path == FoodMod.CustomconfigPath)
+                    {
+                        errorMessage = $"Loading config for {config.FoodPrefabName} failed. Double check your custom config settings to confirm the prefab name is correct. Error: {e.Message}";
+                    }
+                    else
+                    {
+                        errorMessage = $"Loading config for {config.FoodPrefabName} failed, so it has been removed from the JSON configuration. Error: {e.Message}";
+                    }
+                    Jotunn.Logger.LogError(errorMessage);
                 }
             }
-            if (File.Exists(configPath))
-            {
-                File.Delete(configPath);
-                GenerateConfigFile();
 
-                Jotunn.Logger.LogInfo("Updated configs");
+            if (File.Exists(path) && path != CustomconfigPath)
+            {
+                File.Delete(path);
+                ScanAndGenerateConsumables();
+                Jotunn.Logger.LogInfo(logMessage);
             }
         }
-        private void RegisterCustomConfigValues()
+
+        internal static List<FoodConfig> GetJson(string path)
         {
-            var foodcustomconfigs = GetCustomJson();
-
-            foreach (var config in foodcustomconfigs)
-            {
-                try
-                {
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_food = config.Health;
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodStamina = config.Stamina;
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodBurnTime = config.Duration;
-                    PrefabManager.Cache.GetPrefab<ItemDrop>(config.FoodPrefabName).m_itemData.m_shared.m_foodRegen = config.HealthRegen;
-                }
-
-                catch (Exception e)
-                {
-                    Jotunn.Logger.LogError($"Loading config for {config.FoodPrefabName} failed. {e.Message} {e.StackTrace}");
-                }
-            }
-            Jotunn.Logger.LogInfo("Updated Custom configs");
-        }
-
-        internal static List<FoodConfig> GetJson()
-        {
-            Jotunn.Logger.LogDebug($"Attempting to load config file from path {configPath}");
-            var jsonText = AssetUtils.LoadText(configPath);
+            Jotunn.Logger.LogDebug($"Attempting to load config file from path {path}");
+            var jsonText = AssetUtils.LoadText(path);
             Jotunn.Logger.LogDebug("File found. Attempting to deserialize...");
             var foodconfigs = JsonMapper.ToObject<List<FoodConfig>>(jsonText);
             return foodconfigs;
         }
-        internal static List<FoodConfig> GetCustomJson()
+        public void UpdateSettings(object sender, EventArgs e)
         {
-            Jotunn.Logger.LogDebug($"Attempting to load config file from path {configPath}");
-            var jsonText = AssetUtils.LoadText(CustomconfigPath);
-            Jotunn.Logger.LogDebug("File found. Attempting to deserialize...");
-            var foodcustomconfigs = JsonMapper.ToObject<List<FoodConfig>>(jsonText);
-            return foodcustomconfigs;
+            Jotunn.Logger.LogInfo("Updating...");
+            this.RegisterConfigValues();
+            this.RegisterCustomConfigValues();
         }
 
         public static ConfigEntry<bool> Hidefork;
@@ -851,13 +287,13 @@ namespace OldFoodStats
         }
     }
 
-    [Serializable]
     public class FoodConfig
     {
         public string FoodPrefabName { get; set; }
-        public int Health { get; set; }
-        public int Stamina { get; set; }
-        public int Duration { get; set; }
-        public int HealthRegen { get; set; }
+        public float Health { get; set; }
+        public float Stamina { get; set; }
+        public float Duration { get; set; }
+        public float HealthRegen { get; set; }
+        public float FoodEitr { get; set; }
     }
 }

@@ -2,12 +2,9 @@ C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\OldFoodStats.dl
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\OldFoodStats.pdb
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\0Harmony.dll
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\assembly_valheim.dll
-C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\BepInEx.dll
-C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\BepInEx.Harmony.dll
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\Jotunn.dll
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\UnityEngine.AssetBundleModule.dll
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\UnityEngine.CoreModule.dll
-C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\bin\Debug\UnityEngine.dll
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\obj\Debug\OldFoodStats.csproj.AssemblyReference.cache
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\obj\Debug\OldFoodStats.csproj.CoreCompileInputs.cache
 C:\Users\Jayden\Source\Repos\Valheim_Mods\OldFoodStats\obj\Debug\OldFoodStats.csproj.CopyComplete
@@ -24,8 +21,6 @@ C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\Mono.Cecil.Rock
 C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\Mono.Cecil.Rocks.pdb
 C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\Mono.Cecil.dll
 C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\Mono.Cecil.pdb
-C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\MonoMod.exe
 C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\MonoMod.RuntimeDetour.dll
 C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\MonoMod.Utils.dll
-C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\assembly_utils.dll
 C:\Users\Jayden\source\repos\Valheim_Mods\OldFoodStats\bin\Debug\BepInEx.xml

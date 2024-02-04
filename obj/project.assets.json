@@ -2,23 +2,26 @@
   "version": 3,
   "targets": {
     ".NETFramework,Version=v4.7.2": {
-      "HarmonyX/2.10.0": {
+      "HarmonyX/2.10.2": {
         "type": "package",
         "dependencies": {
           "MonoMod.RuntimeDetour": "22.3.23.4"
         },
         "compile": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         }
       },
-      "JotunnLib/2.6.2": {
+      "JotunnLib/2.16.2": {
         "type": "package",
         "dependencies": {
-          "HarmonyX": "2.9.0",
-          "MonoMod": "21.9.19.1"
+          "HarmonyX": "2.9.0"
         },
         "frameworkAssemblies": [
           "Microsoft.CSharp",
@@ -30,10 +33,14 @@
           "System.Xml.Linq"
         ],
         "compile": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "build": {
           "build/JotunnLib.props": {}
@@ -42,32 +49,32 @@
       "Mono.Cecil/0.11.4": {
         "type": "package",
         "compile": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         },
         "runtime": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
-        }
-      },
-      "MonoMod/21.9.19.1": {
-        "type": "package",
-        "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "21.9.19.1"
-        },
-        "frameworkAssemblies": [
-          "System"
-        ],
-        "compile": {
-          "lib/net40/MonoMod.exe": {}
-        },
-        "runtime": {
-          "lib/net40/MonoMod.exe": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         }
       },
       "MonoMod.RuntimeDetour/22.3.23.4": {
@@ -80,10 +87,14 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         }
       },
       "MonoMod.Utils/22.3.23.4": {
@@ -95,31 +106,38 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         }
       }
     },
     ".NETFramework,Version=v4.7.2/win": {
-      "HarmonyX/2.10.0": {
+      "HarmonyX/2.10.2": {
         "type": "package",
         "dependencies": {
           "MonoMod.RuntimeDetour": "22.3.23.4"
         },
         "compile": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         }
       },
-      "JotunnLib/2.6.2": {
+      "JotunnLib/2.16.2": {
         "type": "package",
         "dependencies": {
-          "HarmonyX": "2.9.0",
-          "MonoMod": "21.9.19.1"
+          "HarmonyX": "2.9.0"
         },
         "frameworkAssemblies": [
           "Microsoft.CSharp",
@@ -131,10 +149,14 @@
           "System.Xml.Linq"
         ],
         "compile": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "build": {
           "build/JotunnLib.props": {}
@@ -143,32 +165,32 @@
       "Mono.Cecil/0.11.4": {
         "type": "package",
         "compile": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         },
         "runtime": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
-        }
-      },
-      "MonoMod/21.9.19.1": {
-        "type": "package",
-        "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "21.9.19.1"
-        },
-        "frameworkAssemblies": [
-          "System"
-        ],
-        "compile": {
-          "lib/net40/MonoMod.exe": {}
-        },
-        "runtime": {
-          "lib/net40/MonoMod.exe": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         }
       },
       "MonoMod.RuntimeDetour/22.3.23.4": {
@@ -181,10 +203,14 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         }
       },
       "MonoMod.Utils/22.3.23.4": {
@@ -196,31 +222,154 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.2/win-arm64": {
+      "HarmonyX/2.10.2": {
+        "type": "package",
+        "dependencies": {
+          "MonoMod.RuntimeDetour": "22.3.23.4"
+        },
+        "compile": {
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "JotunnLib/2.16.2": {
+        "type": "package",
+        "dependencies": {
+          "HarmonyX": "2.9.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "System",
+          "System.Core",
+          "System.Data",
+          "System.Data.DataSetExtensions",
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "build/JotunnLib.props": {}
+        }
+      },
+      "Mono.Cecil/0.11.4": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
+        },
+        "runtime": {
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
+        }
+      },
+      "MonoMod.RuntimeDetour/22.3.23.4": {
+        "type": "package",
+        "dependencies": {
+          "Mono.Cecil": "0.11.4",
+          "MonoMod.Utils": "22.3.23.4"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "MonoMod.Utils/22.3.23.4": {
+        "type": "package",
+        "dependencies": {
+          "Mono.Cecil": "0.11.4"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         }
       }
     },
     ".NETFramework,Version=v4.7.2/win-x64": {
-      "HarmonyX/2.10.0": {
+      "HarmonyX/2.10.2": {
         "type": "package",
         "dependencies": {
           "MonoMod.RuntimeDetour": "22.3.23.4"
         },
         "compile": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         }
       },
-      "JotunnLib/2.6.2": {
+      "JotunnLib/2.16.2": {
         "type": "package",
         "dependencies": {
-          "HarmonyX": "2.9.0",
-          "MonoMod": "21.9.19.1"
+          "HarmonyX": "2.9.0"
         },
         "frameworkAssemblies": [
           "Microsoft.CSharp",
@@ -232,10 +381,14 @@
           "System.Xml.Linq"
         ],
         "compile": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "build": {
           "build/JotunnLib.props": {}
@@ -244,32 +397,32 @@
       "Mono.Cecil/0.11.4": {
         "type": "package",
         "compile": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         },
         "runtime": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
-        }
-      },
-      "MonoMod/21.9.19.1": {
-        "type": "package",
-        "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "21.9.19.1"
-        },
-        "frameworkAssemblies": [
-          "System"
-        ],
-        "compile": {
-          "lib/net40/MonoMod.exe": {}
-        },
-        "runtime": {
-          "lib/net40/MonoMod.exe": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         }
       },
       "MonoMod.RuntimeDetour/22.3.23.4": {
@@ -282,10 +435,14 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         }
       },
       "MonoMod.Utils/22.3.23.4": {
@@ -297,31 +454,38 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         }
       }
     },
     ".NETFramework,Version=v4.7.2/win-x86": {
-      "HarmonyX/2.10.0": {
+      "HarmonyX/2.10.2": {
         "type": "package",
         "dependencies": {
           "MonoMod.RuntimeDetour": "22.3.23.4"
         },
         "compile": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net45/0Harmony.dll": {}
+          "lib/net45/0Harmony.dll": {
+            "related": ".xml"
+          }
         }
       },
-      "JotunnLib/2.6.2": {
+      "JotunnLib/2.16.2": {
         "type": "package",
         "dependencies": {
-          "HarmonyX": "2.9.0",
-          "MonoMod": "21.9.19.1"
+          "HarmonyX": "2.9.0"
         },
         "frameworkAssemblies": [
           "Microsoft.CSharp",
@@ -333,10 +497,14 @@
           "System.Xml.Linq"
         ],
         "compile": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/net462/Jotunn.dll": {}
+          "lib/net462/Jotunn.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "build": {
           "build/JotunnLib.props": {}
@@ -345,32 +513,32 @@
       "Mono.Cecil/0.11.4": {
         "type": "package",
         "compile": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         },
         "runtime": {
-          "lib/net40/Mono.Cecil.Mdb.dll": {},
-          "lib/net40/Mono.Cecil.Pdb.dll": {},
-          "lib/net40/Mono.Cecil.Rocks.dll": {},
-          "lib/net40/Mono.Cecil.dll": {}
-        }
-      },
-      "MonoMod/21.9.19.1": {
-        "type": "package",
-        "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "21.9.19.1"
-        },
-        "frameworkAssemblies": [
-          "System"
-        ],
-        "compile": {
-          "lib/net40/MonoMod.exe": {}
-        },
-        "runtime": {
-          "lib/net40/MonoMod.exe": {}
+          "lib/net40/Mono.Cecil.Mdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Pdb.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.Rocks.dll": {
+            "related": ".pdb"
+          },
+          "lib/net40/Mono.Cecil.dll": {
+            "related": ".Mdb.pdb;.pdb;.Pdb.pdb;.Rocks.pdb"
+          }
         }
       },
       "MonoMod.RuntimeDetour/22.3.23.4": {
@@ -383,10 +551,14 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.RuntimeDetour.dll": {}
+          "lib/net452/MonoMod.RuntimeDetour.dll": {
+            "related": ".xml"
+          }
         }
       },
       "MonoMod.Utils/22.3.23.4": {
@@ -398,24 +570,28 @@
           "System"
         ],
         "compile": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net452/MonoMod.Utils.dll": {}
+          "lib/net452/MonoMod.Utils.dll": {
+            "related": ".xml"
+          }
         }
       }
     }
   },
   "libraries": {
-    "HarmonyX/2.10.0": {
-      "sha512": "4ayiy/dlCiW86K2N7Jvbf+VpI5wvP7dncv/6oRmfwRi32UCmCRzCGzsxdMfzJZkp6/26oBW+DrD8vi4UejzVAg==",
+    "HarmonyX/2.10.2": {
+      "sha512": "/5WwkxXX8mPsRuigQt957rJGx1f0dDQxk+bvk4yYITKFjXas9Em+O71zEP8X0ym8OFQQ2XH/2SxS4NC7vEC+Xg==",
       "type": "package",
-      "path": "harmonyx/2.10.0",
+      "path": "harmonyx/2.10.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
-        "harmonyx.2.10.0.nupkg.sha512",
+        "harmonyx.2.10.2.nupkg.sha512",
         "harmonyx.nuspec",
         "lib/net35/0Harmony.dll",
         "lib/net35/0Harmony.xml",
@@ -426,27 +602,23 @@
         "logo_mini.png"
       ]
     },
-    "JotunnLib/2.6.2": {
-      "sha512": "RDYdmvXeGRmEgpwbm7+7f19JrFg5YjO9FOxuBt9PTClgaQUogxrsULlBrNZNuPF/eiY57Po6Yaan2ELuy5ZuHQ==",
+    "JotunnLib/2.16.2": {
+      "sha512": "fPovunGAQK1WUrK4p4Tenum/4m2e6j6mtX1ZxdU8WOfoM4q4x1TkehD2pes51Ve63qVes3yeiwXgfuUJFhWFXA==",
       "type": "package",
-      "path": "jotunnlib/2.6.2",
+      "path": "jotunnlib/2.16.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "build/JotunnBuildTask.dll",
         "build/JotunnLib.props",
         "build/JotunnLibRefsCorlib.props",
-        "build/JotunnLibRefsManaged.props",
         "build/Mono.Cecil.Mdb.dll",
         "build/Mono.Cecil.Pdb.dll",
         "build/Mono.Cecil.Rocks.dll",
         "build/Mono.Cecil.dll",
-        "build/MonoMod.RuntimeDetour.HookGen.exe",
-        "build/MonoMod.RuntimeDetour.dll",
-        "build/MonoMod.Utils.dll",
-        "build/MonoMod.exe",
+        "build/Paths.props",
         "images/JVL_Logo_128x128.png",
-        "jotunnlib.2.6.2.nupkg.sha512",
+        "jotunnlib.2.16.2.nupkg.sha512",
         "jotunnlib.nuspec",
         "lib/net462/Jotunn.dll",
         "lib/net462/Jotunn.pdb",
@@ -478,26 +650,6 @@
         "lib/netstandard2.0/Mono.Cecil.pdb",
         "mono.cecil.0.11.4.nupkg.sha512",
         "mono.cecil.nuspec"
-      ]
-    },
-    "MonoMod/21.9.19.1": {
-      "sha512": "9qIjktFWIN+6snxPkII7kGxRZIXz/AEJ38syL7a0Ip/8PwUKc5uhChWeld10P3uDp3A1Zfs2ThFB8yrok9Uyxw==",
-      "type": "package",
-      "path": "monomod/21.9.19.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net35/MonoMod.exe",
-        "lib/net35/MonoMod.xml",
-        "lib/net40/MonoMod.exe",
-        "lib/net40/MonoMod.xml",
-        "lib/net5.0/MonoMod.dll",
-        "lib/net5.0/MonoMod.runtimeconfig.json",
-        "lib/net5.0/MonoMod.xml",
-        "lib/netstandard2.0/MonoMod.dll",
-        "lib/netstandard2.0/MonoMod.xml",
-        "monomod.21.9.19.1.nupkg.sha512",
-        "monomod.nuspec"
       ]
     },
     "MonoMod.RuntimeDetour/22.3.23.4": {
@@ -541,8 +693,8 @@
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.2": [
-      "HarmonyX >= 2.10.0",
-      "JotunnLib >= 2.6.2"
+      "HarmonyX >= 2.10.2",
+      "JotunnLib >= 2.16.2"
     ]
   },
   "packageFolders": {
@@ -580,17 +732,20 @@
         "dependencies": {
           "HarmonyX": {
             "target": "Package",
-            "version": "[2.10.0, )"
+            "version": "[2.10.2, )"
           },
           "JotunnLib": {
             "target": "Package",
-            "version": "[2.6.2, )"
+            "version": "[2.16.2, )"
           }
         }
       }
     },
     "runtimes": {
       "win": {
+        "#import": []
+      },
+      "win-arm64": {
         "#import": []
       },
       "win-x64": {

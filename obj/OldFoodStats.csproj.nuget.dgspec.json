@@ -36,17 +36,20 @@
           "dependencies": {
             "HarmonyX": {
               "target": "Package",
-              "version": "[2.10.0, )"
+              "version": "[2.10.2, )"
             },
             "JotunnLib": {
               "target": "Package",
-              "version": "[2.6.2, )"
+              "version": "[2.16.2, )"
             }
           }
         }
       },
       "runtimes": {
         "win": {
+          "#import": []
+        },
+        "win-arm64": {
           "#import": []
         },
         "win-x64": {
